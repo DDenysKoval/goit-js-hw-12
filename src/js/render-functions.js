@@ -4,6 +4,8 @@ import "/css/new-lightbox.css";
 
 const list = document.querySelector(".gallery"); 
 const loader = document.querySelector(".loader");
+const loadMore = document.querySelector(".loadmore-btn");
+
 
 const ligthBox = new SimpleLightbox(".gallery li a", {
     captions: true,
@@ -50,7 +52,7 @@ export function createGallery(images) {
     )
     .join("")
 
-  list.innerHTML = markup;
+  list.insertAdjacentHTML("beforeend", markup);
   
   ligthBox.refresh();
 }
@@ -65,4 +67,12 @@ export function showLoader() {
 
 export function hideLoader() {
   loader.classList.add("js-hidden");
+}
+
+export function showLoadMoreButton() {
+  loadMore.classList.remove("js-hidden");
+}
+
+export function hideLoadMoreButton() {
+  loadMore.classList.add("js-hidden");
 }

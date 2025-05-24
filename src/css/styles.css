@@ -133,6 +133,7 @@ button:hover {
   align-items: center;
   flex-wrap: wrap;
   gap: 24px;
+  margin-bottom: 32px;
 }
 
 .gallery-item {
@@ -188,4 +189,9 @@ button:hover {
   line-height: 2;
   letter-spacing: 0.04em;
   color: #2e2f42;
+}
+
+.loadmore-btn {
+  display: block;
+  margin: 0 auto;
 }
