@@ -15,8 +15,8 @@ const form = document.querySelector(".form");
 const loadMore = document.querySelector(".loadmore-btn");
 
 let inputValue;
-let page = 0;
-let totalPages = 0;
+let page;
+let totalPages;
 
 form.addEventListener("submit", async e => {
   page = 1;
@@ -34,17 +34,20 @@ form.addEventListener("submit", async e => {
   try {
     const data = await getImagesByQuery(inputValue, page);
     if (data.hits.length === 0) {
+      hideLoadMoreButton();
       throw new Error("Error");
     }
     createGallery(data.hits);
     totalPages = Math.ceil(data.totalHits / perPage);
+    console.log(totalPages);
+    
+    showLoadMoreButton()
   } catch (error) {
     iziToast.error({
       title: 'Error',
       message: 'Sorry, there are no images matching your search query. Please try again!',
     })
   }
-  showLoadMoreButton()
   page += 1;
   e.target.reset()
 })
@@ -56,7 +59,7 @@ loadMore.addEventListener("click", async e => {
   try {
     const data = await getImagesByQuery(inputValue, page);
     
-    if (page === totalPages) {
+    if (page > totalPages) {
       hideLoadMoreButton();
       throw new Error("Error");
     }
@@ -69,10 +72,8 @@ loadMore.addEventListener("click", async e => {
       behavior: "smooth"
     })
     showLoadMoreButton();
-    showLoader();
 
   } catch (error) {
-    
     iziToast.error({
       title: 'Error',
       message: "We're sorry, but you've reached the end of search results.",
