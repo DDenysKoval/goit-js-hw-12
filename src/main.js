@@ -37,7 +37,11 @@ form.addEventListener("submit", async e => {
     const data = await getImagesByQuery(inputValue, page);
     if (data.hits.length === 0) {
       hideLoadMoreButton();
-      throw new Error("Error");
+      iziToast.error({
+        title: 'Error',
+        message: "Sorry, there are no images matching your search query. Please try again!"
+      })
+      throw new Error('Sorry, there are no images matching your search query. Please try again!');
     }
     createGallery(data.hits);
     totalPages = Math.ceil(data.totalHits / perPage);
@@ -48,45 +52,44 @@ form.addEventListener("submit", async e => {
         title: 'Error',
         message: "We're sorry, but you've reached the end of search results."
       })
-    } else {
-      showLoadMoreButton();
-    }
-  } catch (error) {
-    iziToast.error({
-      title: 'Error',
-      message: 'Sorry, there are no images matching your search query. Please try again!',
-    })
-  }
-  page += 1;
-  hideLoader()
-  e.target.reset()
-})
-
-loadMore.addEventListener("click", async e => {
-  hideLoadMoreButton();
-  showLoader();
-
-  try {
-    const data = await getImagesByQuery(inputValue, page);
-    const card = document.querySelector(".gallery-item"); 
-    const cardHeight = card.getBoundingClientRect().height;
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: "smooth"
-    })
-    createGallery(data.hits);
-    if (page >= totalPages) {
-      hideLoadMoreButton();
-      iziToast.error({
-      title: 'Error',
-      message: "We're sorry, but you've reached the end of search results.",
-      })
+      throw new Error("We're sorry, but you've reached the end of search results.")
     } else {
       showLoadMoreButton();
     }
   } catch (error) {
     console.log(error.message);
   }
-  hideLoader();
+  hideLoader()
+  e.target.reset()
+})
+
+loadMore.addEventListener("click", async e => {
   page += 1;
+  
+  hideLoadMoreButton();
+  showLoader();
+  
+  try {
+    const data = await getImagesByQuery(inputValue, page);
+    const card = document.querySelector(".gallery-item"); 
+    const cardHeight = card.getBoundingClientRect().height;
+
+    if (page >= totalPages) {
+      hideLoadMoreButton();
+      iziToast.error({
+        title: 'Error',
+        message: "We're sorry, but you've reached the end of search results.",
+      })
+    } else {
+      showLoadMoreButton();
+    }
+    createGallery(data.hits);
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: "smooth"
+    })
+  } catch (error) {
+    console.log(error.message);
+  }
+  hideLoader();
 })
