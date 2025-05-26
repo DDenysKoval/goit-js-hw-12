@@ -19,6 +19,7 @@ let page;
 let totalPages;
 
 form.addEventListener("submit", async e => {
+  hideLoadMoreButton();
   page = 1;
   e.preventDefault();
   inputValue = e.target.elements.search.value.trim();
@@ -33,6 +34,7 @@ form.addEventListener("submit", async e => {
 
   try {
     const data = await getImagesByQuery(inputValue, page);
+    showLoader();
     if (data.hits.length === 0) {
       hideLoadMoreButton();
       throw new Error("Error");
@@ -41,7 +43,15 @@ form.addEventListener("submit", async e => {
     totalPages = Math.ceil(data.totalHits / perPage);
     console.log(totalPages);
     
-    showLoadMoreButton()
+    if (page >= totalPages) {
+      hideLoadMoreButton();
+      iziToast.error({
+        title: 'Error',
+        message: "We're sorry, but you've reached the end of search results."
+      })
+    } else {
+      showLoadMoreButton();
+    }
   } catch (error) {
     iziToast.error({
       title: 'Error',
@@ -49,6 +59,7 @@ form.addEventListener("submit", async e => {
     })
   }
   page += 1;
+  hideLoader()
   e.target.reset()
 })
 
@@ -71,14 +82,19 @@ loadMore.addEventListener("click", async e => {
       top: cardHeight * 2,
       behavior: "smooth"
     })
-    showLoadMoreButton();
-
-  } catch (error) {
-    iziToast.error({
+    if (page >= totalPages) {
+      hideLoadMoreButton();
+      iziToast.error({
       title: 'Error',
       message: "We're sorry, but you've reached the end of search results.",
     })
+    } else {
+      showLoadMoreButton();
+    }
+
+  } catch (error) {
+  return error.message
   }
   hideLoader();
   page += 1;
-  })
+})
