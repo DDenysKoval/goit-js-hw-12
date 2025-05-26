@@ -31,17 +31,16 @@ form.addEventListener("submit", async e => {
     return
   }
   clearGallery();
+  showLoader();
 
   try {
     const data = await getImagesByQuery(inputValue, page);
-    showLoader();
     if (data.hits.length === 0) {
       hideLoadMoreButton();
       throw new Error("Error");
     }
     createGallery(data.hits);
     totalPages = Math.ceil(data.totalHits / perPage);
-    console.log(totalPages);
     
     if (page >= totalPages) {
       hideLoadMoreButton();
@@ -69,31 +68,24 @@ loadMore.addEventListener("click", async e => {
 
   try {
     const data = await getImagesByQuery(inputValue, page);
-    
-    if (page > totalPages) {
-      hideLoadMoreButton();
-      throw new Error("Error");
-    }
-
-    createGallery(data.hits);
     const card = document.querySelector(".gallery-item"); 
     const cardHeight = card.getBoundingClientRect().height;
     window.scrollBy({
       top: cardHeight * 2,
       behavior: "smooth"
     })
+    createGallery(data.hits);
     if (page >= totalPages) {
       hideLoadMoreButton();
       iziToast.error({
       title: 'Error',
       message: "We're sorry, but you've reached the end of search results.",
-    })
+      })
     } else {
       showLoadMoreButton();
     }
-
   } catch (error) {
-  return error.message
+    console.log(error.message);
   }
   hideLoader();
   page += 1;
